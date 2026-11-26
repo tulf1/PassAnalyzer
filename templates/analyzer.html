@@ -1,0 +1,84 @@
+{% extends "base.html" %}
+{% block title %}PassAnalyzer – Analyzer{% endblock %}
+{% block nav_analyzer %}active{% endblock %}
+{% block content %}
+
+<section style="display:flex; flex-direction:column; gap:8px">
+  <h1>Password strength analyzer</h1>
+  <p class="lead">Checks a password against policy P1&ndash;P8, compares naive and pattern-adjusted entropy, and estimates cracking time. Nothing is stored or logged.</p>
+</section>
+
+<section class="card">
+  <label for="pw">Password</label>
+  <div style="display:flex; flex-wrap:wrap; gap:12px">
+    <div class="field">
+      <input id="pw" type="text" value="P@ssw0rd!" autocomplete="off" spellcheck="false">
+      <button type="button" id="toggle" class="icon-btn" aria-label="Show password">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7S1 12 1 12z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+      </button>
+    </div>
+    <button type="button" id="analyze" class="btn">Analyze</button>
+  </div>
+  <p class="hint">Re-analyses 300&nbsp;ms after you stop typing &middot; sent only in a POST body &middot; max 128 characters</p>
+</section>
+
+<section class="card" aria-label="Score">
+  <div class="score-top">
+    <div style="display:flex; align-items:baseline; gap:12px">
+      <span class="score-num" id="score">&ndash;</span>
+      <span class="score-den">/ 100</span>
+      <span class="pill" id="rating">&ndash;</span>
+    </div>
+    <span class="meta" id="meta"></span>
+  </div>
+  <div class="bar"><span id="score-bar" style="width:0%"></span></div>
+  <div class="scale"><span>Very Weak 0&ndash;29</span><span>Weak 30&ndash;49</span><span>Fair 50&ndash;69</span><span>Strong 70&ndash;84</span><span>Very Strong 85+</span></div>
+</section>
+
+<div class="row">
+  <section class="card col" aria-label="Policy">
+    <h2>Policy check <span class="sub" id="policy-sub"></span></h2>
+    <ul class="rules" id="rules"></ul>
+  </section>
+
+  <section class="card col" aria-label="Entropy">
+    <h2>Entropy <span class="sub">how hard is it to guess?</span></h2>
+    <p class="hint">Entropy measures how many guesses an attacker needs, in bits. Each extra bit doubles the guesses. More bits = stronger password.</p>
+    <div class="grid2">
+      <div class="ent-box">
+        <div class="ent-label">Naive &mdash; if every character were random</div>
+        <div class="ent-val"><span id="naive">&ndash;</span> <span class="ent-label">bits</span></div>
+        <div class="ent-label" id="pool"></div>
+      </div>
+      <div class="ent-box adj">
+        <div class="ent-label">Adjusted &mdash; how a real attacker guesses</div>
+        <div class="ent-val adj"><span id="adjusted">&ndash;</span> <span class="ent-label">bits</span></div>
+        <div class="ent-label">pattern-aware estimate</div>
+      </div>
+    </div>
+    <div style="display:flex; flex-direction:column; gap:8px">
+      <div class="minibar"><span class="muted" style="width:72px">Naive</span><div class="track"><span id="naive-bar" style="width:0%; background:#5B7383"></span></div></div>
+      <div class="minibar"><span class="muted" style="width:72px">Adjusted</span><div class="track"><span id="adj-bar" style="width:0%; background:var(--accent)"></span></div></div>
+    </div>
+  </section>
+</div>
+
+<div class="row">
+  <section class="card col" aria-label="Crack time">
+    <h2>Estimated time to crack <span class="sub">average case, <span class="formula"><i>T</i> = <span class="frac"><span class="num">2<sup><i>H</i>&minus;1</sup></span><span class="den"><i>R</i></span></span></span></span></h2>
+    <div class="scroll-x">
+      <table>
+        <thead><tr><th>ID</th><th>Scenario</th><th class="right">Time</th></tr></thead>
+        <tbody id="crack"></tbody>
+      </table>
+    </div>
+  </section>
+
+  <section class="card col" aria-label="Recommendations">
+    <h2>Recommendations</h2>
+    <ol class="tips" id="tips"></ol>
+  </section>
+</div>
+
+{% endblock %}
+{% block scripts %}<script src="{{ url_for('static', filename='js/analyzer.js') }}"></script>{% endblock %}

@@ -1,0 +1,49 @@
+{
+  "policy_version": "1.0",
+  "min_length": 8,
+  "min_word_length": 4,
+  "min_walk_length": 4,
+  "keyboard_walks": ["qwerty", "qwertyuiop", "asdfgh", "asdfghjkl", "zxcvbn", "zxcvbnm", "qazwsx", "1qaz2wsx", "1q2w3e4r", "qweasd", "poiuy", "mnbvcx"],
+  "leet_map": { "@": ["a"], "0": ["o"], "1": ["i", "l"], "3": ["e"], "$": ["s"], "7": ["t"] },
+  "years": { "gregorian": [1900, 2099], "hijri": [1300, 1499] },
+
+  "scoring": {
+    "length_points_per_char": 4, "length_cap": 10,
+    "class_points": 7.5,
+    "entropy_divisor": 4, "entropy_cap": 30,
+    "penalties": { "P6": 30, "P7": 20, "P8": 15 },
+    "fail_cap": 49
+  },
+  "ratings": [
+    { "min": 85, "label": "Very Strong" },
+    { "min": 70, "label": "Strong" },
+    { "min": 50, "label": "Fair" },
+    { "min": 30, "label": "Weak" },
+    { "min": 0,  "label": "Very Weak" }
+  ],
+
+  "scenarios": [
+    { "id": "S1", "label": "Online attack, throttled",       "rate_per_second": 0.027778 },
+    { "id": "S2", "label": "Online attack, not throttled",   "rate_per_second": 10 },
+    { "id": "S3", "label": "Offline, fast hash (GPU SHA-256)", "rate_per_second": 1e10 }
+  ],
+
+  "mutations": {
+    "case_forms": ["lower", "capitalized", "upper", "leet_lower", "leet_capitalized"],
+    "leet_out": { "a": "@", "o": "0", "e": "3", "i": "1", "s": "$", "t": "7" },
+    "suffix_numbers": [0, 99],
+    "suffix_extra": ["123", "1234", "12345"],
+    "suffix_years_gregorian": [1950, 2030],
+    "suffix_years_hijri": [1380, 1450],
+    "suffix_symbols": ["!", "@", "#", "."],
+    "suffix_stack": true
+  },
+
+  "attack": {
+    "salt_length": 8, "max_seconds_per_target": 120, "hash_scheme": "password_salt",
+    "own_max_seconds": 240,
+    "extra_wordlist": "data/attack_wordlist.txt",
+    "hybrid_suffix_numbers": [0, 999],
+    "bruteforce": { "charset": "abcdefghijklmnopqrstuvwxyz", "max_length": 8 }
+  }
+}

@@ -1,0 +1,35 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>{% block title %}PassAnalyzer{% endblock %}</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+<header class="site-header">
+  <div class="wrap header-inner">
+    <div class="brand">
+      <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#00E5C7" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3l8 3v6c0 4.5-3.4 8.3-8 9-4.6-.7-8-4.5-8-9V6l8-3z"></path><path d="M9 12l2 2 4-4"></path></svg>
+      <span class="brand-name">PassAnalyzer</span>
+    </div>
+    <nav aria-label="Main" class="nav">
+      <a href="/" class="{% block nav_analyzer %}{% endblock %}">Analyzer</a>
+      <a href="/simulate" class="{% block nav_simulate %}{% endblock %}">Attack Simulation</a>
+    </nav>
+  </div>
+</header>
+
+<main class="wrap main">
+  {% block content %}{% endblock %}
+</main>
+
+<footer class="site-footer">
+  <div class="wrap">PassAnalyzer &middot; Group 5</div>
+</footer>
+
+{% block scripts %}{% endblock %}
+</body>
+</html>

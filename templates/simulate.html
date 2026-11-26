@@ -1,0 +1,80 @@
+{% extends "base.html" %}
+{% block title %}PassAnalyzer – Attack Simulation{% endblock %}
+{% block nav_simulate %}active{% endblock %}
+{% block content %}
+
+<section style="display:flex; flex-direction:column; gap:8px">
+  <h1>Dictionary attack simulation</h1>
+  <p class="lead">Pick how many accounts to pull from the database, then run the attack on that sample. The crack rate updates to match the accounts you chose.</p>
+</section>
+
+<section class="stat-grid">
+  <div class="card">
+    <div class="ent-label">Expanded dictionary |W|</div>
+    <div class="ent-val" id="wsize">&ndash;</div>
+    <div class="ent-label">guesses the attacker tries: base words plus every variant</div>
+  </div>
+  <div class="card">
+    <div class="ent-label">Database</div>
+    <div class="ent-val">{{ "{:,}".format(total_accounts) }} <span class="ent-label">accounts</span></div>
+    <div class="ent-label">simulated users, each stored only as a salt and SHA-256 hash</div>
+  </div>
+  <div class="card">
+    <div class="ent-label">Cracked in this run</div>
+    <div class="ent-val" id="cracked-total">&ndash;</div>
+    <div class="ent-label">accounts whose password fell to the dictionary</div>
+  </div>
+</section>
+
+<section class="card" aria-label="Attack your own password">
+  <h2>Attack your own password <span class="sub">see if a real attacker would crack it</span></h2>
+  <p class="hint">Type a password. It's salted and hashed like a stored credential, then attacked &mdash; nothing is saved. Run the two attacks separately: <strong>Dictionary attack</strong> (the database wordlist plus hybrid rules: word + digits + symbol) or <strong>Brute-force attack</strong> (try every combination of lowercase letters &mdash; this one can take a few minutes).</p>
+  <div style="display:flex; flex-wrap:wrap; gap:12px; align-items:center">
+    <div class="field" style="flex:1 1 320px; max-width:420px">
+      <input id="own" type="text" value="" placeholder="e.g. Riyadh2024" autocomplete="off" spellcheck="false">
+    </div>
+    <button type="button" id="attack-dict" class="btn">Dictionary attack</button>
+    <button type="button" id="attack-brute" class="btn">Brute-force attack</button>
+    <button type="button" id="attack-stop" class="btn" style="display:none; background:#FF5470; color:#1A0D10">Stop</button>
+  </div>
+  <p id="own-timer" class="mono" style="display:none; margin-top:12px; color:var(--accent-hi); font-size:15px"></p>
+  <p id="own-error" class="hint" style="color:var(--red); display:none">Type a password first.</p>
+  <div id="own-result" style="display:none"></div>
+</section>
+
+<section class="card" aria-label="Run the attack">
+  <div style="display:flex; flex-wrap:wrap; align-items:flex-end; gap:20px">
+    <div style="display:flex; flex-direction:column; gap:6px">
+      <label for="count">How many accounts to attack?</label>
+      <div style="display:flex; align-items:center; gap:10px">
+        <input id="count" class="num-input" type="number" min="1" max="{{ total_accounts }}" step="1" value="100">
+        <span class="hint">of {{ "{:,}".format(total_accounts) }} &middot; max {{ "{:,}".format(total_accounts) }}</span>
+      </div>
+    </div>
+    <button type="button" id="run" class="btn">Run attack</button>
+    <div id="status" style="display:none; align-items:center; gap:10px; color:var(--muted); font-size:14px; margin-left:auto">
+      <span class="spinner"></span><span>Running&hellip;</span>
+    </div>
+  </div>
+  <p class="hint" id="note">Whole accounts only, so the count is a whole number.</p>
+</section>
+
+<section class="card" aria-label="Summary">
+  <h2>Crack rate per class <span class="sub" id="sample-sub"></span></h2>
+  <div id="classes" style="display:flex; flex-direction:column; gap:10px">
+    <p class="hint">Run the attack to see results.</p>
+  </div>
+</section>
+
+<section class="card" aria-label="Results">
+  <h2>Results <span class="sub">first rows of the sample</span></h2>
+  <div class="scroll-x">
+    <table>
+      <thead><tr><th>Username</th><th>Tool rating</th><th>Cracked</th><th class="right">Attempts</th><th>Found as</th></tr></thead>
+      <tbody id="results"><tr><td class="muted" colspan="5">No run yet.</td></tr></tbody>
+    </table>
+  </div>
+</section>
+
+{% endblock %}
+{% block scripts %}<script src="{{ url_for('static', filename='js/simulate.js') }}"></script>{% endblock %}
